@@ -18,8 +18,17 @@ pip install -r requirements.txt
 
 ## Run steamlit app
 ```
-streamlit run dashboard.py & npx localtunnel --port 8501
-copy external URL : 34.145.177.125 (contoh)
-go to your urls is: https://gentle-points-smell.loca.lt (contoh)
-paste external URL to tunnel password and click to submit
-```
+1.Install dependencies
+pip install -r requirements.txt
+2.Jalankan program
+streamlit run dashboard.py
+3.Buka browser lalu arahkan ke halaman
+http://localhost:8501
+
+
+
+## 🔗 Akses Aplikasi Online
+
+Silakan lihat aplikasi dashboard di:  
+[https://data-science-9nimwmbn4zymtnytji9g8u.streamlit.app/](https://data-science-9nimwmbn4zymtnytji9g8u.streamlit.app/)
+
