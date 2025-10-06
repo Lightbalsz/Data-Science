@@ -89,6 +89,53 @@ filtered_df = all_data_df[
 
 st.success(f"Menampilkan data dari **{start_date}** hingga **{end_date}** "
            f"({len(filtered_df)} baris setelah filter diterapkan).")
+# === 1️⃣ Bagaimana tren penyewaan sepeda berubah berdasarkan musim, cuaca, atau waktu?
+st.markdown("### 🌤️ Bagaimana tren penyewaan sepeda berubah berdasarkan musim, cuaca, atau waktu?")
+if not filtered_df.empty:
+    df = filtered_df[['season', 'casual', 'registered']]
+    melted_df = pd.melt(df, id_vars='season', var_name='status', value_name='sewa per hari')
+
+    fig4, ax4 = plt.subplots(figsize=(8, 4))
+    sns.boxplot(data=melted_df, x='season', y='sewa per hari', hue='status', showfliers=False, palette='Set2')
+    plt.title('Perbandingan Sewa Sepeda per Musim antara Pengguna Casual & Registered')
+    st.pyplot(fig4)
+else:
+    st.warning("Tidak ada data yang tersedia untuk analisis tren musiman dan status pengguna.")
+
+# === 2️⃣ Bagaimana pengaruh penyewaan sepeda terhadap hari kerja dengan hari libur?
+st.markdown("### 🗓️ Bagaimana pengaruh penyewaan sepeda terhadap hari kerja dengan hari libur?")
+if not filtered_df.empty:
+    mask1 = ((filtered_df['workingday'] == 0) | (filtered_df['holiday'] == 1))
+    df1 = filtered_df[mask1]
+
+    mask2 = ((filtered_df['workingday'] == 1) & (filtered_df['holiday'] == 0))
+    df2 = filtered_df[mask2]
+
+    columns = ['total', 'casual', 'registered']
+    color_palette = sns.color_palette("Set2")
+
+    fig5, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
+
+    # Hari libur
+    for i, col in enumerate(columns):
+        sns.lineplot(x='hour', y=col, data=df1, label=col, color=color_palette[i], ax=axes[0])
+    axes[0].set_title('Sewa Sepeda di Hari Libur')
+    axes[0].set_xlabel('Jam')
+    axes[0].set_ylabel('Jumlah Penyewa')
+    axes[0].legend()
+
+    # Hari kerja
+    for i, col in enumerate(columns):
+        sns.lineplot(x='hour', y=col, data=df2, label=col, color=color_palette[i], ax=axes[1])
+    axes[1].set_title('Sewa Sepeda pada Hari Kerja')
+    axes[1].set_xlabel('Jam')
+    axes[1].set_ylabel('Jumlah Penyewa')
+    axes[1].legend()
+
+    plt.tight_layout()
+    st.pyplot(fig5)
+else:
+    st.warning("Tidak ada data yang tersedia untuk analisis hari kerja dan hari libur.")
 
 # ==============================
 # 🌦️ RFM-Style Analysis Section
@@ -146,56 +193,3 @@ if not filtered_df.empty:
     st.success(f"🌤️ {top_weather} — total {int(top_value):,} sepeda disewa.")
 else:
     st.warning("Tidak ada data untuk menampilkan hasil cuaca.")
-
-# ==============================
-# 📈 Analisis Tambahan
-# ==============================
-st.subheader("📈 Analisis Tambahan")
-
-# === 1️⃣ Bagaimana tren penyewaan sepeda berubah berdasarkan musim, cuaca, atau waktu?
-st.markdown("### 🌤️ Bagaimana tren penyewaan sepeda berubah berdasarkan musim, cuaca, atau waktu?")
-if not filtered_df.empty:
-    df = filtered_df[['season', 'casual', 'registered']]
-    melted_df = pd.melt(df, id_vars='season', var_name='status', value_name='sewa per hari')
-
-    fig4, ax4 = plt.subplots(figsize=(8, 4))
-    sns.boxplot(data=melted_df, x='season', y='sewa per hari', hue='status', showfliers=False, palette='Set2')
-    plt.title('Perbandingan Sewa Sepeda per Musim antara Pengguna Casual & Registered')
-    st.pyplot(fig4)
-else:
-    st.warning("Tidak ada data yang tersedia untuk analisis tren musiman dan status pengguna.")
-
-# === 2️⃣ Bagaimana pengaruh penyewaan sepeda terhadap hari kerja dengan hari libur?
-st.markdown("### 🗓️ Bagaimana pengaruh penyewaan sepeda terhadap hari kerja dengan hari libur?")
-if not filtered_df.empty:
-    mask1 = ((filtered_df['workingday'] == 0) | (filtered_df['holiday'] == 1))
-    df1 = filtered_df[mask1]
-
-    mask2 = ((filtered_df['workingday'] == 1) & (filtered_df['holiday'] == 0))
-    df2 = filtered_df[mask2]
-
-    columns = ['total', 'casual', 'registered']
-    color_palette = sns.color_palette("Set2")
-
-    fig5, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
-
-    # Hari libur
-    for i, col in enumerate(columns):
-        sns.lineplot(x='hour', y=col, data=df1, label=col, color=color_palette[i], ax=axes[0])
-    axes[0].set_title('Sewa Sepeda di Hari Libur')
-    axes[0].set_xlabel('Jam')
-    axes[0].set_ylabel('Jumlah Penyewa')
-    axes[0].legend()
-
-    # Hari kerja
-    for i, col in enumerate(columns):
-        sns.lineplot(x='hour', y=col, data=df2, label=col, color=color_palette[i], ax=axes[1])
-    axes[1].set_title('Sewa Sepeda pada Hari Kerja')
-    axes[1].set_xlabel('Jam')
-    axes[1].set_ylabel('Jumlah Penyewa')
-    axes[1].legend()
-
-    plt.tight_layout()
-    st.pyplot(fig5)
-else:
-    st.warning("Tidak ada data yang tersedia untuk analisis hari kerja dan hari libur.")
